@@ -4,6 +4,7 @@ OnlyZones = false, -- Allow drug growth only in defined zones
 GlobalGrowthRate = 10, -- In how many seconds it takes to update the plant (At 100% rate plant will grow 1% every update)
 DefaultRate = 10, -- Plants planted outside zone default growth rate percentage
 WeightSystem = true, -- Using ESX Weight System
+NPCDealer = true,
 
 Zones = {
 
@@ -38,6 +39,8 @@ Plants = { -- Create seeds for drugs
         PlantType = 'plant1', -- Choose plant types from (plant1, plant2, small_plant) also you can change plants yourself in main/client.lua line: 2
         Color = '122, 232, 19', -- Main color of the plant rgb
         Produce = 'weed_lemonhaze', -- Item the plant is going to produce when harvested
+        Permission = true,
+        PermissionGroup = "manager.permissao",
         Amount = 3, -- The max amount you can harvest from the plant
         SeedChance = 50, -- Percent of getting back the seed
         Time = 30, -- Time it takes to harvest in miliseconds
@@ -50,6 +53,8 @@ Plants = { -- Create seeds for drugs
         PlantType = 'plant2', -- Choose plant types from (plant1, plant2, small_plant) also you can change plants yourself in main/client.lua line: 2
         Color = '255, 255, 255', -- Main color of the plant rgb
         Produce = 'cocaina', -- Item the plant is going to produce when harvested
+        Permission = true,
+        PermissionGroup = "manager.permissao",
         Amount = 3, -- The max amount you can harvest from the plant
         SeedChance = 50, -- Percent of getting back the seed
         Time = 30, -- Time it takes to harvest in miliseconds
@@ -60,16 +65,18 @@ Plants = { -- Create seeds for drugs
 
 ProcessingTables = { -- Create processing table
     
-        ['cocaine_processing_table'] = {
+        ['pasta-base'] = {
 
             Label = 'Cocaine',
             Model = 'bkr_prop_coke_table01a', -- Exanples: bkr_prop_weed_table_01a, bkr_prop_meth_table01a, bkr_prop_coke_table01a
             Color = '255, 255, 255', -- Color in RGB
-            Item = 'cocaine', -- Processed item
+            Item = 'cocaina', -- Processed item
+            Permission = true,
+            PermissionGroup = "manager.permissao",
             Time = 10, -- Time in seconds to process 1 item
             Ingrediants = {
-                ['coca'] = 3,
-                ['fuel'] = 1
+                ['pasta-base'] = 3,
+                ['dinheiro'] = 1
             }
 
             }
@@ -134,20 +141,19 @@ Text = {
     ['missing_ingrediants'] = 'You dont have these ingrediants',
     ['dealer_holo'] = '~g~E~w~  Sell drugs',
     ['sold_dealer'] = 'You sold drugs to dealer! +$',
-    ['no_drugs'] = 'You dont have enough drugs'
+    ['no_drugs'] = 'You dont have enough drugs',
+    ['success_process'] = 'Você produziu ',
+    ['no_permission'] = 'Você não possuem habilidades para fazer essa ação desejada.'
 }
 
 }
 
 -- Only change if you know what are you doing!
-function SendTextMessage(msg)
+function SendTextMessage(source, msg, type)
 
-        SetNotificationTextEntry('STRING')
-        AddTextComponentString(msg)
-        DrawNotification(0,1)
+        local source = source
+        TriggerEvent("Notify",type,msg,6000)
 
-        --EXAMPLE USED IN VIDEO
-        --exports['mythic_notify']:DoHudText('error', msg)
 
 end
 
