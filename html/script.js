@@ -7,6 +7,7 @@ var amount;
 var processing = false;
 var inventory;
 var canProcess = false;
+var urlitens = "http://131.196.198.137:8090/vrp_itens/";
 
 
 function closeMenu() {
@@ -14,7 +15,7 @@ function closeMenu() {
     processing = false;
 
     $("#main_container").fadeOut(400);
-    timeout = setTimeout(function() {
+    timeout = setTimeout(function () {
         $("#main_container").html("");
         $("#main_container").fadeIn();
     }, 400);
@@ -22,7 +23,7 @@ function closeMenu() {
 
 }
 
-$(document).keyup(function(e) {
+$(document).keyup(function (e) {
     if (e.keyCode === 27) {
 
 
@@ -50,7 +51,7 @@ function deleteTable() {
 
 
         $("#main_container").fadeOut(400);
-        timeout = setTimeout(function() {
+        timeout = setTimeout(function () {
             $("#main_container").html("");
             $("#main_container").fadeIn();
         }, 400);
@@ -73,7 +74,7 @@ function updateProcess() {
     $('#u1767-4').text("X" + input);
 
 
-    $('.ingrediant').each(function() {
+    $('.ingrediant').each(function () {
 
         var original = $(this).find('#u1740-4').attr('data-original');
 
@@ -102,12 +103,12 @@ function updateProcess() {
 
 function process() {
 
-    if (processing || !canProcess) {
+    if (processing || canProcess) {
 
         return;
     }
 
-    if (amount == null) {
+    if (amount == null || amount == 'undefined') {
         amount = 1;
     }
 
@@ -123,7 +124,7 @@ function process() {
 
     $("#u1700").animate({
         width: 475
-    }, time, function() {
+    }, time, function () {
         processed();
     });
 
@@ -135,7 +136,7 @@ function processed() {
     playProcessed();
     $("#u1700").animate({
         width: 0
-    }, 200, function() {
+    }, 200, function () {
         processing = false;
     });
 
@@ -150,7 +151,7 @@ function setProgress(field, p, textField) {
 
     $(field).animate({
         width: prog
-    }, 400, function() {
+    }, 400, function () {
 
 
 
@@ -195,14 +196,14 @@ function openProccesingTable() {
         '    <p>COCAINE</p>' +
         '   </div>' +
         '   <div class="clearfix colelem" id="u1625-4"><!-- content -->' +
-        '    <p>PROCESSING TABLE</p>' +
+        '    <p>PROCESSAMENTO</p>' +
         '   </div>' +
         '   <div class="clearfix colelem" id="pu1694"><!-- group -->' +
         '    <div class="grpelem" id="u1694"><!-- simple frame --></div>' +
         '    <div class="shadow rounded-corners grpelem" style="background-color: rgba(' + Tables[table].Color + ', 1.0);  box-shadow:0 0 8px rgba(' + Tables[table].Color + ',.5),0 0 8px rgba(' + Tables[table].Color + ',.5);" id="u1700"><!-- simple frame --></div>' +
         '   </div>' +
         '   <div class="clearfix colelem" id="pu1713"><!-- group -->' +
-        '    <div class="shadow grpelem" style=" border: 2px solid rgba(' + Tables[table].Color + ', 1.0);background-color: rgba(31,31,31,0.5); background-image: url(img/' + Tables[table].Item + '.png); background-size: 80%; background-repeat: no-repeat; background-position: center;" id="u1713"><!-- simple frame --></div>' +
+        '    <div class="shadow grpelem" style=" border: 2px solid rgba(' + Tables[table].Color + ', 1.0);background-color: rgba(31,31,31,0.5); background-image: url(' + urlitens + '' + Tables[table].Item + '.png); background-size: 80%; background-repeat: no-repeat; background-position: center;" id="u1713"><!-- simple frame --></div>' +
         '    <div class="clearfix grpelem" id="u1714"><!-- group -->' +
         '     <div class="clearfix grpelem" id="u1767-4"><!-- content -->' +
         '      <p>x1</p>' +
@@ -227,7 +228,7 @@ function openProccesingTable() {
         if (exist) {
 
             base = base + '       <div class="clearfix grpelem ingrediant" data-item="' + key2 + '" id="u1737"><!-- group -->' +
-                '       <div class="shadow grpelem" id="u1734" style="background-color: rgba(31,31,31,0.5); background-image: url(img/' + key2 + '.png); background-size: 80%; background-repeat: no-repeat; background-position: center;"><!-- simple frame --></div>' +
+                '       <div class="shadow grpelem" id="u1734" style="background-color: rgba(31,31,31,0.5); background-image: url(' + urlitens + '' + key2 + '.png); background-size: 80%; background-repeat: no-repeat; background-position: center;"><!-- simple frame --></div>' +
                 '        <div class="clearfix grpelem" data-original="' + value2 + '" id="u1740-4">' +
                 'X' + value2 +
                 '        </div>' +
@@ -236,7 +237,7 @@ function openProccesingTable() {
             canProcess = false;
 
             base = base + '       <div class="clearfix grpelem ingrediant" data-item="' + key2 + '"  id="u1737"><!-- group -->' +
-                '       <div class="shadow grpelem" id="u1734" style=" opacity: 0.7; background-color: rgba(31,31,31,0.5); background-image: url(img/' + key2 + '.png); background-size: 80%; background-repeat: no-repeat; background-position: center;"><!-- simple frame --></div>' +
+                '       <div class="shadow grpelem" id="u1734" style=" opacity: 0.7; background-color: rgba(31,31,31,0.5); background-image: url(' + urlitens + '' + key2 + '.png); background-size: 80%; background-repeat: no-repeat; background-position: center;"><!-- simple frame --></div>' +
                 '        <div class="clearfix grpelem" style="color: #ff667d" data-original="' + value2 + '" id="u1740-4">' +
                 'X' + value2 +
                 '        </div>' +
@@ -253,7 +254,7 @@ function openProccesingTable() {
         '       <input class="shadow grpelem"  type="number" max="100" min="1" value="1" oninput="updateProcess()" id="u1785"><!-- simple frame --></input>' +
         '       <div class="shadow rounded-corners clearfix grpelem" style="box-shadow: inset 0px 0px 0px 2px rgba(' + Tables[table].Color + ', 1.0);" onclick="process()" id="u1770"><!-- group -->' +
         '        <div class="clearfix grpelem"  id="u1773-4"><!-- content -->' +
-        '         <p>PROCESS</p>' +
+        '         <p>PRODUZIR</p>' +
         '        </div>' +
         '       </div>' +
         '<div id="delete" onclick="deleteTable()" style="box-shadow: inset 0px 0px 0px 2px rgba(' + Tables[table].Color + ', 1.0);">X</div>' +
@@ -374,7 +375,7 @@ function updateInformation(info) {
 
 }
 
-window.addEventListener('message', function(event) {
+window.addEventListener('message', function (event) {
 
 
     var edata = event.data;
