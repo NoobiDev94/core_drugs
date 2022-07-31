@@ -1,7 +1,7 @@
 
 -- SEED USABLE ITEM REGISTER
 -- Register every seed only changing the name of it between ''
---inicio
+--[[]
 
 ESX.RegisterUsableItem('weed_lemonhaze_seed', function(playerId)
 		plant(playerId, 'weed_lemonhaze_seed')
@@ -28,4 +28,4 @@ end)
 ESX.RegisterUsableItem('cocaine_processing_table', function(playerId)
 		proccesing(playerId, 'cocaine_processing_table')
 end)
-
+]]
