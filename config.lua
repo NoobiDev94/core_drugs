@@ -40,18 +40,20 @@ Plants = { -- Create seeds for drugs
         Produce = 'weed_lemonhaze', -- Item the plant is going to produce when harvested
         Amount = 3, -- The max amount you can harvest from the plant
         SeedChance = 50, -- Percent of getting back the seed
-        Time = 3000 -- Time it takes to harvest in miliseconds
+        Time = 30, -- Time it takes to harvest in miliseconds
+        AmountSeed = 2
     },
-    ['coca_seed'] = {
+    ['pasta-base'] = {
         Label = 'Coca Plant', -- 
-        Type = 'cocaine', -- Type of drug
+        Type = 'pasta-base', -- Type of drug
         Image = 'coca.png', -- Image of plant
         PlantType = 'plant2', -- Choose plant types from (plant1, plant2, small_plant) also you can change plants yourself in main/client.lua line: 2
         Color = '255, 255, 255', -- Main color of the plant rgb
-        Produce = 'coca', -- Item the plant is going to produce when harvested
+        Produce = 'cocaina', -- Item the plant is going to produce when harvested
         Amount = 3, -- The max amount you can harvest from the plant
         SeedChance = 50, -- Percent of getting back the seed
-        Time = 3000 -- Time it takes to harvest in miliseconds
+        Time = 30, -- Time it takes to harvest in miliseconds
+        AmountSeed = 2
     }
 
 },
@@ -80,7 +82,7 @@ Drugs = { -- Create you own drugs
 
     	Label = 'Lemon Haze',
     	Animation = 'blunt', -- Animations: blunt, sniff, pill
-        Time = 30, -- Time is added on top of 30 seconds
+        Time = 3, -- Time is added on top of 30 seconds
     	Effects = { -- Effects: runningSpeedIncrease, infinateStamina, moreStrength, healthRegen, foodRegen, drunkWalk, psycoWalk, outOfBody, cameraShake, fogEffect, confusionEffect, whiteoutEffect, intenseEffect, focusEffect
             'intenseEffect',
             'healthRegen',
@@ -93,7 +95,7 @@ Drugs = { -- Create you own drugs
 
         Label = 'Cocaine',
         Animation = 'sniff', -- Animations: blunt, sniff, pill
-        Time = 60, -- Time is added on top of 30 seconds
+        Time = 6, -- Time is added on top of 30 seconds
         Effects = { -- Effects: runningSpeedIncrease, infinateStamina, moreStrength, healthRegen, foodRegen, drunkWalk, psycoWalk, outOfBody, cameraShake, fogEffect, confusionEffect, whiteoutEffect, intenseEffect, focusEffect
             'runningSpeedIncrease',
             'infinateStamina',
