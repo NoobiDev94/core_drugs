@@ -15,7 +15,7 @@ function closeMenu() {
     processing = false;
 
     $("#main_container").fadeOut(400);
-    timeout = setTimeout(function () {
+    timeout = setTimeout(function() {
         $("#main_container").html("");
         $("#main_container").fadeIn();
     }, 400);
@@ -23,7 +23,7 @@ function closeMenu() {
 
 }
 
-$(document).keyup(function (e) {
+$(document).keyup(function(e) {
     if (e.keyCode === 27) {
 
 
@@ -51,7 +51,7 @@ function deleteTable() {
 
 
         $("#main_container").fadeOut(400);
-        timeout = setTimeout(function () {
+        timeout = setTimeout(function() {
             $("#main_container").html("");
             $("#main_container").fadeIn();
         }, 400);
@@ -74,7 +74,7 @@ function updateProcess() {
     $('#u1767-4').text("X" + input);
 
 
-    $('.ingrediant').each(function () {
+    $('.ingrediant').each(function() {
 
         var original = $(this).find('#u1740-4').attr('data-original');
 
@@ -102,12 +102,12 @@ function updateProcess() {
 }
 
 function process() {
-
+ 
     if (processing || canProcess) {
 
         return;
     }
-
+ 
     if (amount == null || amount == 'undefined') {
         amount = 1;
     }
@@ -124,7 +124,7 @@ function process() {
 
     $("#u1700").animate({
         width: 475
-    }, time, function () {
+    }, time, function() {
         processed();
     });
 
@@ -136,7 +136,7 @@ function processed() {
     playProcessed();
     $("#u1700").animate({
         width: 0
-    }, 200, function () {
+    }, 200, function() {
         processing = false;
     });
 
@@ -151,7 +151,7 @@ function setProgress(field, p, textField) {
 
     $(field).animate({
         width: prog
-    }, 400, function () {
+    }, 400, function() {
 
 
 
@@ -289,7 +289,7 @@ function openInformation(alive) {
         '    <img class="grpelem" id="u817" alt="" width="80" height="80" src="img/' + Plants[type].Image + '"/><!-- rasterized frame -->' +
         '    <div class="clearfix grpelem" id="pu894-4"><!-- column -->' +
         '     <div class="clearfix colelem" id="u894-4"><!-- content -->' +
-        '      <p>' + Plants[type].Type.toUpperCase() + '</p>' +
+        '      <p>' + Plants[type].NameItem.toUpperCase() + '</p>' +
         '     </div>' +
         '     <div class="clearfix colelem" style=" color:rgb(' + color + '); text-shadow:0 0 8px rgba(' + color + ',.5),0 0 8px rgba(' + color + ',.5),1px 1px 1px rgba(0,0,0,.5);" id="u793-4"><!-- content -->' +
         '      <p>' + Plants[type].Label.toUpperCase() + '</p>' +
@@ -320,7 +320,7 @@ function openInformation(alive) {
         '   </div>' +
         '   <div class="clearfix colelem" id="pu804-4"><!-- group -->' +
         '    <div class="clearfix grpelem" id="u804-4"><!-- content -->' +
-        '     <p>¡GUA</p>' +
+        '     <p>√ÅGUA</p>' +
         '    </div>' +
         '    <div class="grpelem" id="u860"><!-- simple frame --></div>' +
         '    <div class="clearfix grpelem" style=" color:rgb(' + color + '); text-shadow:0 0 8px rgba(' + color + ',.5),0 0 8px rgba(' + color + ',.5),1px 1px 1px rgba(0,0,0,.5);" id="u869-4"><!-- content -->' +
@@ -342,7 +342,7 @@ function openInformation(alive) {
 
     if (alive) {
         base = base + '   <div id="button" onclick="feedPlant()">ADUBAR</div>' +
-            '   <div id="button" onclick="waterPlant()">¡GUA</div>' +
+            '   <div id="button" onclick="waterPlant()">√ÅGUA</div>' +
             '   <div id="button" onclick="harvestPlant()">COLHER</div>';
     }
 
@@ -375,7 +375,7 @@ function updateInformation(info) {
 
 }
 
-window.addEventListener('message', function (event) {
+window.addEventListener('message', function(event) {
 
 
     var edata = event.data;

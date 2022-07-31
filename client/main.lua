@@ -554,14 +554,15 @@ end
 RegisterNUICallback(
     "feed",
     function(data)
-        local typePercent = Config.PlantFood['fertilizer']
+        local typePercent = Config.PlantFood['fertilizante']
         local percent = 0
         local item = nil
         local data = coRE.returnInventory()
+        print("cheguei no feed")
         for _, i in pairs(data.inventory) do
-     
+     print("inv ", _, i)
             for k, v in pairs(Config.PlantFood) do
-      
+                print("PlantFood ",k, v)
                 if _ == k and i.amount > 0 then
                     percent = v
                     item = k
@@ -575,8 +576,9 @@ RegisterNUICallback(
             if CurrentPlantInfo.food > 100 then
                 CurrentPlantInfo.food = 100
             end
+            print("mostra comida",  CurrentPlantInfo.food, CurrentPlant)
             TriggerServerEvent("core_drugs:updatePlant", CurrentPlant, CurrentPlantInfo)
-           -- TriggerServerEvent("core_drugs:removeItem", item, 1)
+            TriggerServerEvent("core_drugs:removeItem", item, 1)
 
             SendNUIMessage(
                 {
@@ -611,7 +613,7 @@ RegisterNUICallback(
                 CurrentPlantInfo.water = 100
             end
             TriggerServerEvent("core_drugs:updatePlant", CurrentPlant, CurrentPlantInfo)
-            --TriggerServerEvent("core_drugs:removeItem", item, 1)
+            TriggerServerEvent("core_drugs:removeItem", item, 1)
 
             SendNUIMessage(
                 {
@@ -969,7 +971,29 @@ if Config.NPCDealer then
     end
 end
 )
+Citizen.CreateThread(function ()
 
+    while true do
+        
+        if IsControlPressed(0, 19) then
+
+            if not interactive then
+                interactive = true
+                SetNuiFocus(true, true)
+            end
+        else
+            Citizen.Wait(0)
+            if interactive then
+                SetNuiFocus(false, false)
+                interactive = false
+            end
+        end
+        Citizen.Wait(0)
+
+    end
+
+
+end)
 Citizen.CreateThread(
     function()
         Citizen.Wait(5000)
@@ -984,12 +1008,10 @@ Citizen.CreateThread(
 
 
                 if not shown then
-                    local tablez = Config.ProcessingTables[Plants[nPlant].type]
-        if tablez.Permission then
-                if coRE.ReturnPermissionPlayer(tablez.PermissionGroup) then
+
                     shown = true
                     local info = coRE.getPlant(nPlant)
-
+                 SetTimeout(Config.TimeDelayNui, function()
                     SendNUIMessage(
                         {
                             type = "showPlant",
@@ -999,13 +1021,12 @@ Citizen.CreateThread(
                             info = info
                         }
                     )
-               
+             end)
+              
                 end
-            
-        end
-                else
+                if shown then
                         CurrentPlant = nPlant
-     
+                        Citizen.Wait(500)
                         local info = coRE.getPlant(nPlant)
                        
 
@@ -1019,20 +1040,8 @@ Citizen.CreateThread(
                         )
 
                         end
-
-
-                if IsControlPressed(0, 19) then
-                    if not interactive then
-                        interactive = true
-                        SetNuiFocus(true, true)
-                    end
-                else
-                    Citizen.Wait(10)
-                    if interactive then
-                        SetNuiFocus(false, false)
-                        interactive = false
-                    end
-                end
+                        
+                    
             else
              
                 if shown then
@@ -1051,7 +1060,7 @@ Citizen.CreateThread(
             if nPlant == false then
                 Citizen.Wait(1000)
             else
-                Citizen.Wait(1)
+                Citizen.Wait(0)
             end
         end
     

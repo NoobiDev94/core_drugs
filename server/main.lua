@@ -30,7 +30,7 @@ vRP._prepare("core_drugs/DeadPlants", "SELECT id FROM plants WHERE (water < 2 OR
 vRP._prepare("core_drugs/GrowPlants",
     "SELECT id, growth FROM plants WHERE(growth >= 30 AND growth <= 31) OR (growth >= 80 AND growth <= 81)")
 vRP._prepare("core_drugs/UpdatePlantsDead",
-    "UPDATE plants SET rate = @rate, food = @food, water = @water  WHERE id = @id")
+    "UPDATE plants SET rate = @rate, food = @food, water = @water  WHERE markid = @id")
 vRP._prepare("core_drugs/UpdatePlantsReduction",
     "UPDATE plants SET growth = growth + (0.01 * rate), food = food - (0.02 * rate), water = water - (0.02 * rate) WHERE water >= 2 OR food >= 2")
 function updatePlants()
@@ -165,7 +165,7 @@ AddEventHandler(
         local Player = vRP.getUserId(source)
         local typeInfo = Config.Plants[type]
         if vRP.tryGetInventoryItem(Player, type, parseInt(typeInfo.AmountSeed)) then
-
+            PlantProgress(source, type)
             local genID = idgens:gen()
 
             addPlant(type, coords, genID)
@@ -302,14 +302,14 @@ AddEventHandler(
         --Player.addInventoryItem(type, 1)
     end
 )
-vRP._prepare("core_drugs/updatePlant", "UPDATE plants SET growth= @growth, rate = @rate, food = @food, water = @water  WHERE id = @id")
+vRP._prepare("core_drugs/updatePlant", "UPDATE plants SET growth= @growth, rate = @rate, food = @food, water = @water  WHERE markid = @markid")
 RegisterServerEvent("core_drugs:updatePlant")
 AddEventHandler(
     "core_drugs:updatePlant",
     function(id, info)
-
+print("vim atualizar os dados ",id, info.growth, info.food, info.water)
         vRP.query("core_drugs/updatePlant",
-            { id = id, growth = info.growth, rate = info.rate, food = info.food, water = info.water })
+            { markid = id, growth = info.growth, rate = info.rate, food = info.food, water = info.water })
 
     end
 )
@@ -429,13 +429,15 @@ Citizen.CreateThread(function()
 
                 table.insert(datadb,
                     { id = v.id, markid = v.markid, growth = v.growth, rate = v.rate, water = v.water, food = v.food })
-                if #Checkplants == v.id then
+                    print("verifico ", #Checkplants,#datadb)
+                    refreshdb = 10
+                if #Checkplants == #datadb then
                     goto breaklooping
                 end
 
             end
             ::breaklooping::
-            refreshdb = 5000
+            refreshdb = 500
         end
 
 

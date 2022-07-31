@@ -1,11 +1,3 @@
-local Tunnel = module("vrp", "lib/Tunnel")
-local Proxy = module("vrp", "lib/Proxy")
-local Tools = module("vrp", "lib/Tools")
-vRP = Proxy.getInterface("vRP")
-coRE = {}
-coRE = Tunnel.getInterface("core_drugs")
-
-
 --  TriggerServerEvent("core_drugs:Produzir", source, "nome do item configurado")
 
 RegisterServerEvent("core_drugs:Produzir")
