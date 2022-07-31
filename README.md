@@ -6,6 +6,14 @@ Esse desenvolvimento é direcionado uma plataforma chamada FiveM. Pessoal do Fiv
 
 Utilizando do FiveM junto ao LUA, foi desenvolvido esse projeto, ele é um sistema de plantação de drogas. O personagem do game consegue armazenar os itens colhidos na plantação que ele encontrar durante a jogatina e também plantar sementes diversas, cultivar e transformar em algo.
 
+## DISCLAIMER
+
+This SCRIPT was being sold by VRPEX stores illegally in Brazil by people who stole from its owner, so to put an end to this trade, I converted the ESX version to VRPEX and made it available for free. DONT BUY AND DONT SOLD THIS VERSION!
+
+For support and update, buy with author.
+
+THIS VERSION IS VRPEX FRAMEWORK
+
 ## Referência
 
  - [Natives for GTA FiveM](https://docs.fivem.net/natives/)
