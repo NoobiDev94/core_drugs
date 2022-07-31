@@ -985,8 +985,8 @@ Citizen.CreateThread(
 
                 if not shown then
                     local tablez = Config.ProcessingTables[Plants[nPlant].type]
-		if tablez.Permission then
-				if coRE.ReturnPermissionPlayer(tablez.PermissionGroup) then
+        if tablez.Permission then
+                if coRE.ReturnPermissionPlayer(tablez.PermissionGroup) then
                     shown = true
                     local info = coRE.getPlant(nPlant)
 
