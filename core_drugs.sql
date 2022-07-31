@@ -5,7 +5,8 @@ CREATE TABLE `plants` (
   `water` double NOT NULL,
   `food` double NOT NULL,
   `growth` double NOT NULL,
-  `rate` double NOT NULL
+  `rate` double NOT NULL,
+  `markid` int(11) NOT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `plants`
