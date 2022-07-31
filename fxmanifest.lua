@@ -17,11 +17,13 @@ client_scripts{
     "@vrp/lib/utils.lua",
     'config.lua',
     'client/main.lua',
+   
 }
 
 server_scripts{
     "@vrp/lib/utils.lua",
     'config.lua',
     'server/main.lua',
+    'TriggerItems.lua'
 
 }
