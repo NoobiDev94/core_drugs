@@ -35,6 +35,10 @@ THIS VERSION IS VRPEX FRAMEWORK
 ![App Screenshot](https://media.discordapp.net/attachments/978689218752679986/1002404345842765904/unknown.png?width=674&height=657)
 ![App Screenshot](https://media.discordapp.net/attachments/978689218752679986/1002404017781100584/unknown.png?width=845&height=657)
 
+## Meu Discord
+
+- [@Noobi#1994](https://discord.com/invite/ZNDwbVyF3n)
+
 
 ## Autores
 
