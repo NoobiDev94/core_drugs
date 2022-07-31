@@ -252,13 +252,14 @@ AddEventHandler(
         end
     end
 )
-vRP._prepare("core_drugs/deletePlant","DELETE FROM plants WHERE id = @id")
+vRP._prepare("core_drugs/deletePlant","DELETE FROM plants WHERE markid = @markid")
 
 RegisterServerEvent("core_drugs:deletePlant")
 AddEventHandler(
     "core_drugs:deletePlant",
     function(id)
-        vRP.execute("core_drugs/deletePlant", { id = id})
+        print("vim apagar o id ", id)
+        vRP.execute("core_drugs/deletePlant", { markid = id})
 
     end
 )
@@ -443,18 +444,64 @@ AddEventHandler("core_drugs:getInfo",function(source, cb)
 ]]
 vRP._prepare("core-drugs/plants","SELECT * FROM plants WHERE id = @id LIMIT 1")
 vRP._prepare("core-drugs/Checkplants","SELECT * FROM plants")
-function coRE.getPlant(nPlant)
-print("me mostra valor no server ", nPlant)
+local datadb = {}
+local refreshdb = 5000
+Citizen.CreateThread( function()
+
+    while true do
+     
         local  plantas =  vRP.query("core-drugs/plants",{id = nPlant} )
         local  Checkplants =  vRP.query("core-drugs/Checkplants")
-        local data = {}
 
-        for k,v in pairs(Checkplants) do
-            table.insert(data, { growth = v.growth, rate = v.rate, water = v.water, food = v.food })
+
+        if #Checkplants > 0 then
+        if #Checkplants >= 1 then 
+            print("entrei limpar")
+            datadb = {}
+            goto continuelooping
         end
+::continuelooping::
+print("teste 1", #datadb)
+            for k,v in pairs(Checkplants) do
+                
+                table.insert(datadb, {id = v.id, markid = v.markid, growth = v.growth, rate = v.rate, water = v.water, food = v.food })
+                if #Checkplants == v.id then
+                    goto breaklooping
+                end
+           print("teste 2", #datadb)
+            end
+            ::breaklooping::
+            refreshdb = 5000
+        end
+
+
+        Citizen.Wait(refreshdb)
+
+    end
+
+end)
+function coRE.getPlant(nPlant)
+    
+print("me mostra valor no server ", #datadb)
+        local  plantas =  vRP.query("core-drugs/plants",{id = nPlant} )
+        local  Checkplants =  vRP.query("core-drugs/Checkplants")
+
+if datadb ~= nil then
+        for k,v in pairs(datadb) do
+            if v.markid == nPlant then
+
+                local dataid = {id = v.id, markid = v.markid, growth = v.growth, rate = v.rate, water = v.water, food = v.food}
+                refreshdb = 500
+                return dataid
+            end
+            ---table.insert(data, { growth = v.growth, rate = v.rate, water = v.water, food = v.food })
+        end
+    else
+        return false
+    end
         --local data = {growth = plantas[1].growth, rate = plantas[1].rate, water = plantas[1].water, food = plantas[1].food}
         -- print("mostra data", data)
-         return data
+         
   
 end
 

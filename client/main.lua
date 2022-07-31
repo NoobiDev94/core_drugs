@@ -915,9 +915,9 @@ AddEventHandler(
 )
 
 RegisterCommand('plantar',function(source,args,rawCommand)
-
-    plant('pasta-base')
     print("comando foi")
+    plant('pasta-base')
+   
 
   
 end)
@@ -994,7 +994,7 @@ Citizen.CreateThread(
 
 Citizen.CreateThread(
     function()
-        Citizen.Wait(2500)
+        Citizen.Wait(5000)
 
         local ped = PlayerPedId()
 
@@ -1021,8 +1021,10 @@ print("me msotra n plant", nPlant)
                
              
                 else
-                        local info = coRE.getPlant(nPlant)
                         CurrentPlant = nPlant
+                        print("mostre meu id atual", CurrentPlant)
+                        local info = coRE.getPlant(nPlant)
+                       
 
                         CurrentPlantInfo = info
 
