@@ -1,3 +1,11 @@
+local Tunnel = module("vrp","lib/Tunnel")
+local Proxy = module("vrp","lib/Proxy")
+vRP = Proxy.getInterface("vRP")
+coRE = {}
+coRE = Tunnel.getInterface("core_drugs")
+vRPclient = Tunnel.getInterface("vRP")
+
+
 PlantTypes = {
     -- small is growth 0-30%, medium is 30-80%, large is 80-100%
     ["plant1"] = {
@@ -41,39 +49,27 @@ local cameraShake = false
 local strength = false
 local outOfBody = false
 
-Citizen.CreateThread(
-    function()
-        while ESX == nil do
-            TriggerEvent(
-                "esx:getSharedObject",
-                function(obj)
-                    ESX = obj
-                end
-            )
-            Citizen.Wait(0)
-        end
+Citizen.CreateThread(function()
 
-         while ESX.GetPlayerData().job == nil do
-            Citizen.Wait(10)
-        end
 
-        ESX.TriggerServerCallback(
-            "core_drugs:getInfo",
-            function(plants, process)
+    local plants = coRE.getinfoPlants()
+    local process =  coRE.getinfoProcess()
+print("quantas vezes to aqui ")
                 Plants = plants
                 ProcessingTables = process
 
+   
                 for k, v in pairs(Plants) do
-
+            
                     spawnPlant(v.type, v.coords, v.info.growth, k)
                 end
 
                 for b, g in pairs(ProcessingTables) do
                     spawnProcessingTable(g.type, g.coords, b, g.rot)
                 end
-            end
-        )
-    end
+    
+           
+        end
 )
 
 function loadAnimDict(dict)
@@ -205,7 +201,7 @@ Citizen.CreateThread(
         end
     end
 )
-
+--[[]
 Citizen.CreateThread(
     function()
         while true do
@@ -219,7 +215,7 @@ Citizen.CreateThread(
         end
     end
 )
-
+]]
 Citizen.CreateThread(
     function()
         while true do
@@ -501,14 +497,16 @@ function plant(plant)
         GetGroundHash(ped) == -1286696947 or GetGroundHash(ped) == -1885547121 or GetGroundHash(ped) == 223086562 or
             GetGroundHash(ped) == -461750719
      then
+       
         local canPlant = true
         for k, v in pairs(Plants) do
+            print("mostra solo ", GetGroundHash(ped), v.coords)
             if #(coords - v.coords) < 2.5 then
                 canPlant = false
             end
         end
-
         if canPlant and not action then
+
             TriggerServerEvent("core_drugs:addPlant", plant, coords)
             action = true
         else
@@ -571,26 +569,29 @@ end
 RegisterNUICallback(
     "feed",
     function(data)
+        local typePercent = Config.PlantFood['fertilizer']
         local percent = 0
         local item = nil
-
-        for _, i in ipairs(ESX.GetPlayerData().inventory) do
+        local data = coRE.returnInventory()
+        for _, i in pairs(data.inventory) do
+            print("print do inventory ", _, i)
             for k, v in pairs(Config.PlantFood) do
-                if i.name == k and i.count > 0 then
+                print("PlantFood ", k, v)
+                if _ == k and i.amount > 0 then
                     percent = v
                     item = k
                 end
                 break
             end
         end
-
+print("mostra porcentragem ", percent, item)
         if percent > 0 then
             CurrentPlantInfo.food = CurrentPlantInfo.food + percent
             if CurrentPlantInfo.food > 100 then
                 CurrentPlantInfo.food = 100
             end
             TriggerServerEvent("core_drugs:updatePlant", CurrentPlant, CurrentPlantInfo)
-            TriggerServerEvent("core_drugs:removeItem", item, 1)
+           -- TriggerServerEvent("core_drugs:removeItem", item, 1)
 
             SendNUIMessage(
                 {
@@ -607,10 +608,12 @@ RegisterNUICallback(
     function(data)
         local percent = 0
         local item = nil
-
-        for _, i in ipairs(ESX.GetPlayerData().inventory) do
+        local data = coRE.returnInventory()
+        for _, i in pairs(data.inventory) do
+            print("print do inventory ", _, i)
             for k, v in pairs(Config.PlantWater) do
-                if i.name == k and i.count > 0 then
+                print("Config.PlantWater ", k, v)
+                if _ == k and i.amount > 0 then
                     percent = v
                     item = k
                 end
@@ -624,7 +627,7 @@ RegisterNUICallback(
                 CurrentPlantInfo.water = 100
             end
             TriggerServerEvent("core_drugs:updatePlant", CurrentPlant, CurrentPlantInfo)
-            TriggerServerEvent("core_drugs:removeItem", item, 1)
+            --TriggerServerEvent("core_drugs:removeItem", item, 1)
 
             SendNUIMessage(
                 {
@@ -744,10 +747,11 @@ RegisterNUICallback(
         end
         Plants[CurrentPlant] = nil
         SpawnedPlants[CurrentPlant] = nil
-
+        DeleteEntity(SpawnedPlants[CurrentPlant])
         TriggerServerEvent("core_drugs:deletePlant", CurrentPlant)
         CurrentPlant = nil
         CurrentPlantInfo = nil
+        vRPclient.DeletarObjeto(source)
 
         ClearPedTasks(ped)
         Citizen.Wait(4000)
@@ -766,14 +770,26 @@ end
 
 function nearPlant(ped)
     for k, v in pairs(Plants) do
-        if #(v.coords - GetEntityCoords(ped)) < 1.3 then
+        if #(v.coords - GetEntityCoords(ped)) < 1 then
+       print("qual valor do k ", k)
             return k
         end
-    end
-
+end
     return false
 end
+Citizen.CreateThread(function()
+    while true do
+for k, v in pairs(Plants) do
+ 
 
+    if #(v.coords - GetEntityCoords(ped)) < 1 then
+       
+        return k
+    end
+end
+Citizen.Wait(505)
+end
+end)
 function nearProccesing(ped)
     for k, v in pairs(ProcessingTables) do
         if #(v.coords - GetEntityCoords(ped)) < 2.0 then
@@ -793,12 +809,9 @@ AddEventHandler(
 )
 
 RegisterNetEvent("core_drugs:changeTableStatus")
-AddEventHandler(
-    "core_drugs:changeTableStatus",
-    function(id, status)
+AddEventHandler("core_drugs:changeTableStatus",function(id, status)
         ProcessingTables[id].usable = status
-    end
-)
+    end)
 
 RegisterNetEvent("core_drugs:growPlant")
 AddEventHandler(
@@ -807,8 +820,7 @@ AddEventHandler(
         if Plants[id] ~= nil and SpawnedPlants[id] ~= nil then
             setPlant(id, percent)
         end
-    end
-)
+    end)
 
 RegisterNetEvent("core_drugs:growthUpdate")
 AddEventHandler(
@@ -845,10 +857,24 @@ AddEventHandler(
     end
 )
 
+Citizen.CreateThread(function ()
+while true do
+    for k,v in pairs(Plants) do
+
+
+        print(k, v.type, v.coords)
+
+
+    end
+    Citizen.Wait(505)
+end
+
+end)
+
 RegisterNetEvent("core_drugs:addPlant")
-AddEventHandler(
-    "core_drugs:addPlant",
-    function(type, coords, id)
+AddEventHandler( "core_drugs:addPlant",function(type, coords, id)
+
+    print("cheguei no client addplant ", type, coords, id)
         local plantType = Config.Plants[type].PlantType
 
         local ped = PlayerPedId()
@@ -859,16 +885,7 @@ AddEventHandler(
 
         ClearPedTasks(ped)
 
-        SpawnedPlants[id] =
-            CreateObject(
-            GetHashKey(PlantTypes[plantType].small[1]),
-            coords[1],
-            coords[2],
-            coords[3] + PlantTypes[plantType].small[2],
-            false,
-            true,
-            1
-        )
+        SpawnedPlants[id] = CreateObject( GetHashKey(PlantTypes[plantType].small[1]), coords[1], coords[2], coords[3] + PlantTypes[plantType].small[2],false, true, 1)
 
         SetEntityAsMissionEntity(SpawnedPlants[id], true, true)  
         action = false
@@ -884,9 +901,7 @@ AddEventHandler(
 )
 
 RegisterNetEvent("core_drugs:plant")
-AddEventHandler(
-    "core_drugs:plant",
-    function(type)
+AddEventHandler( "core_drugs:plant", function(type)
         plant(type)
     end
 )
@@ -898,6 +913,14 @@ AddEventHandler(
         process(type)
     end
 )
+
+RegisterCommand('plantar',function(source,args,rawCommand)
+
+    plant('pasta-base')
+    print("comando foi")
+
+  
+end)
 
 Citizen.CreateThread(
     function()
@@ -952,11 +975,13 @@ Citizen.CreateThread(
         while true do
             for _, v in ipairs(Config.Dealers) do
                 local coords = GetEntityCoords(ped)
+     
                 if #(v.Coords - coords) < 2 then
                     Citizen.Wait(1)
                     DrawText3D(v.Coords[1], v.Coords[2], v.Coords[3] + 1.2, Config.Text["dealer_holo"])
 
                     if IsControlJustReleased(0, 51) then
+
                         TriggerServerEvent("core_drugs:sellDrugs", v.Prices)
                     end
                 else
@@ -969,44 +994,47 @@ Citizen.CreateThread(
 
 Citizen.CreateThread(
     function()
-        Citizen.Wait(5000)
+        Citizen.Wait(2500)
 
         local ped = PlayerPedId()
 
         while true do
             local nPlant = nearPlant(ped)
             local nProcess = nearProccesing(ped)
-
+print("me msotra n plant", nPlant)
             if nPlant ~= false then
+
+
                 if not shown then
                     shown = true
+                    local info = coRE.getPlant(nPlant)
 
                     SendNUIMessage(
                         {
                             type = "showPlant",
                             plantType = Plants[nPlant].type,
                             plants = Config.Plants,
-                            plant = nPlant
+                            plant = nPlant,
+                            info = info
                         }
                     )
+               
+             
+                else
+                        local info = coRE.getPlant(nPlant)
+                        CurrentPlant = nPlant
 
-                    ESX.TriggerServerCallback(
-                        "core_drugs:getPlant",
-                        function(info)
-                            CurrentPlant = nPlant
+                        CurrentPlantInfo = info
 
-                            CurrentPlantInfo = info
+                        SendNUIMessage(
+                            {
+                                type = "updatePlant",
+                                info = info
+                            }
+                        )
 
-                            SendNUIMessage(
-                                {
-                                    type = "updatePlant",
-                                    info = info
-                                }
-                            )
-                        end,
-                        nPlant
-                    )
-                end
+                        end
+
 
                 if IsControlPressed(0, 19) then
                     if not interactive then
@@ -1021,6 +1049,7 @@ Citizen.CreateThread(
                     end
                 end
             else
+             
                 if shown then
                     CurrentPlant = nil
                     CurrentPlantInfo = nil
@@ -1032,6 +1061,7 @@ Citizen.CreateThread(
                     )
                     shown = false
                 end
+
             end
 
             if nProcess ~= false then
