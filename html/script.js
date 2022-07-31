@@ -299,7 +299,7 @@ function openInformation(alive) {
         '   <div class="colelem" id="u851"><!-- simple frame --></div>' +
         '   <div class="clearfix colelem" id="pu798-4"><!-- group -->' +
         '    <div class="clearfix grpelem" id="u798-4"><!-- content -->' +
-        '     <p>GROWTH</p>' +
+        '     <p>CRESCIMENTO</p>' +
         '    </div>' +
         '    <div class="clearfix grpelem" style=" color:rgb(' + color + '); text-shadow:0 0 8px rgba(' + color + ',.5),0 0 8px rgba(' + color + ',.5),1px 1px 1px rgba(0,0,0,.5);" id="u836-4"><!-- content -->' +
         '     0%' +
@@ -309,7 +309,7 @@ function openInformation(alive) {
         '   </div>' +
         '   <div class="clearfix colelem" id="pu801-4"><!-- group -->' +
         '    <div class="clearfix grpelem" id="u801-4"><!-- content -->' +
-        '     <p>RATE</p>' +
+        '     <p>QUALIDADE</p>' +
         '    </div>' +
         '    <div class="grpelem" id="u857"><!-- simple frame --></div>' +
         '    <div class="clearfix grpelem" style=" color:rgb(' + color + '); text-shadow:0 0 8px rgba(' + color + ',.5),0 0 8px rgba(' + color + ',.5),1px 1px 1px rgba(0,0,0,.5);" id="u866-4"><!-- content -->' +
@@ -319,7 +319,7 @@ function openInformation(alive) {
         '   </div>' +
         '   <div class="clearfix colelem" id="pu804-4"><!-- group -->' +
         '    <div class="clearfix grpelem" id="u804-4"><!-- content -->' +
-        '     <p>WATER</p>' +
+        '     <p>ÁGUA</p>' +
         '    </div>' +
         '    <div class="grpelem" id="u860"><!-- simple frame --></div>' +
         '    <div class="clearfix grpelem" style=" color:rgb(' + color + '); text-shadow:0 0 8px rgba(' + color + ',.5),0 0 8px rgba(' + color + ',.5),1px 1px 1px rgba(0,0,0,.5);" id="u869-4"><!-- content -->' +
@@ -329,7 +329,7 @@ function openInformation(alive) {
         '   </div>' +
         '   <div class="clearfix colelem" id="pu839-4"><!-- group -->' +
         '    <div class="clearfix grpelem" id="u839-4"><!-- content -->' +
-        '     <p>FOOD</p>' +
+        '     <p>NUTRIENTE</p>' +
         '    </div>' +
         '    <div class="grpelem" id="u863"><!-- simple frame --></div>' +
         '    <div class="clearfix grpelem" style=" color:rgb(' + color + '); text-shadow:0 0 8px rgba(' + color + ',.5),0 0 8px rgba(' + color + ',.5),1px 1px 1px rgba(0,0,0,.5);" id="u872-4"><!-- content -->' +
@@ -340,13 +340,13 @@ function openInformation(alive) {
         '   <div id="buttons">';
 
     if (alive) {
-        base = base + '   <div id="button" onclick="feedPlant()">FEED</div>' +
-            '   <div id="button" onclick="waterPlant()">WATER</div>' +
-            '   <div id="button" onclick="harvestPlant()">HARVEST</div>';
+        base = base + '   <div id="button" onclick="feedPlant()">ADUBAR</div>' +
+            '   <div id="button" onclick="waterPlant()">ÁGUA</div>' +
+            '   <div id="button" onclick="harvestPlant()">COLHER</div>';
     }
 
 
-    base = base + '   <div id="button" onclick="destroyPlant()">DESTROY</div>' +
+    base = base + '   <div id="button" onclick="destroyPlant()">DESTRUIR</div>' +
         '   </div>' +
         '  </div>';
 
@@ -359,7 +359,6 @@ function openInformation(alive) {
 
 
 function updateInformation(info) {
-
 
     if (info.rate == 0 && $('#u866-4').text() != "0%") {
         $("#information").remove();
