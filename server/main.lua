@@ -140,7 +140,7 @@ function addPlant(type, coords, id)
         end
     end
 
-    if Config.OnlyZones == true then
+    if Config.OnlyZones then
         if zone == nil then
             TriggerClientEvent("core_drugs:sendMessage", id, Config.Text["cant_plant"], "negado")
             return
@@ -307,7 +307,7 @@ RegisterServerEvent("core_drugs:updatePlant")
 AddEventHandler(
     "core_drugs:updatePlant",
     function(id, info)
-print("vim atualizar os dados ",id, info.growth, info.food, info.water)
+
         vRP.query("core_drugs/updatePlant",
             { markid = id, growth = info.growth, rate = info.rate, food = info.food, water = info.water })
 
@@ -429,7 +429,7 @@ Citizen.CreateThread(function()
 
                 table.insert(datadb,
                     { id = v.id, markid = v.markid, growth = v.growth, rate = v.rate, water = v.water, food = v.food })
-                    print("verifico ", #Checkplants,#datadb)
+
                     refreshdb = 10
                 if #Checkplants == #datadb then
                     goto breaklooping

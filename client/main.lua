@@ -558,11 +558,11 @@ RegisterNUICallback(
         local percent = 0
         local item = nil
         local data = coRE.returnInventory()
-        print("cheguei no feed")
+
         for _, i in pairs(data.inventory) do
-     print("inv ", _, i)
+
             for k, v in pairs(Config.PlantFood) do
-                print("PlantFood ",k, v)
+    
                 if _ == k and i.amount > 0 then
                     percent = v
                     item = k
@@ -576,7 +576,7 @@ RegisterNUICallback(
             if CurrentPlantInfo.food > 100 then
                 CurrentPlantInfo.food = 100
             end
-            print("mostra comida",  CurrentPlantInfo.food, CurrentPlant)
+
             TriggerServerEvent("core_drugs:updatePlant", CurrentPlant, CurrentPlantInfo)
             TriggerServerEvent("core_drugs:removeItem", item, 1)
 
