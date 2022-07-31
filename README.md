@@ -2,9 +2,9 @@
 CORE_DRUGS
 Projeto desenvolvido em LUA e Javascript Jquery.
 
-Esse desenvolvimento é direcionado uma plataforma chamada FiveM, essa plataforma em parceria com produtora do jogo GTA (Rockstar Games), criou um "plugin" onde possibilita que você crie logicas usando LUA para criar interações dentro do game de forma personalizada e diferente das já existentes criadas pelos desenvolvedores do game.
+Esse desenvolvimento é direcionado uma plataforma chamada FiveM. Pessoal do FiveM criou esse "plugin/mod" do jogo GTA (Desenvolvido pela Rockstar Games), onde possibilita que você crie logicas usando LUA, C# ou JS para criar interações dentro do game de forma personalizada e diferente das já existentes criadas pelos desenvolvedores do game.
 
-Utilizando do FiveM junto ao LUA, foi desenvolvido esse projeto, ele é um sistema plantação de drogas. O personagem do game consegue armazenar os itens colhidos na plantação que ele encontrar durante a jogatina e também plantar sementes diversas e cultivar.
+Utilizando do FiveM junto ao LUA, foi desenvolvido esse projeto, ele é um sistema de plantação de drogas. O personagem do game consegue armazenar os itens colhidos na plantação que ele encontrar durante a jogatina e também plantar sementes diversas, cultivar e transformar em algo.
 
 ## Referência
 
