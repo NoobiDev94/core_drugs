@@ -21,7 +21,8 @@ ALTER TABLE `plants`
   `item` longtext,
   `time` int(11) NOT NULL,
   `coords` longtext,
-  `rot` double NOT NULL
+  `rot` double NOT NULL,
+  `markid` int(11) NOT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `processing`
