@@ -7,6 +7,7 @@ CREATE TABLE `plants` (
   `growth` double NOT NULL,
   `rate` double NOT NULL,
   `markid` int(11) NOT NULL,
+  `owner` int(11) NOT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `plants`
@@ -23,6 +24,7 @@ ALTER TABLE `plants`
   `coords` longtext,
   `rot` double NOT NULL,
   `markid` int(11) NOT NULL,
+  `owner` int(11) NOT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE `processing`
