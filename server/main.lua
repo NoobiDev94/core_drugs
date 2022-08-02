@@ -6,6 +6,7 @@ vRPclient = Tunnel.getInterface("vRP")
 coRE = {}
 Tunnel.bindInterface("core_drugs", coRE)
 local idgens = Tools.newIDGenerator()
+
 if Config.CheckDbIfExist then
 CreateThread(function()
     vRP.execute('core_drugs/create_plants')
@@ -528,17 +529,15 @@ function coRE.getPlant(nPlant)
 
 
 end
-
 Citizen.CreateThread( function()
     updatePath = "/NoobiDev94/core_drugs" 
     resourceName = "("..GetCurrentResourceName()..")" 
     
     function checkVersion(err,responseText, headers)
         curVersion = LoadResourceFile(GetCurrentResourceName(), "version") 
-    
         if curVersion ~= responseText and tonumber(curVersion) < tonumber(responseText) then
             print("\n###############################")
-            print("\n"..resourceName.." está desatualizado, versão atualizada:\n"..responseText.."sua versão:\n"..curVersion.."\npor favor atualize-o através do https://github.com"..updatePath.."")
+            print("\n"..resourceName.." está desatualizado, versão atualizada:\n"..responseText.."sua versão:\n"..string.gsub(curVersion, "%s+", "").."\npor favor atualize-o através do https://github.com"..updatePath.."")
             print("\n###############################")
         elseif tonumber(curVersion) > tonumber(responseText) then
             print("Você de alguma forma pulou algumas versões do script "..resourceName.." ou o github ficou offline, se ainda estiver online eu aconselho você atualizar (ou fazer downgrade?)")
