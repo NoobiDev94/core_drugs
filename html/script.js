@@ -82,6 +82,7 @@ function updateProcess() {
         item = inventory[item];
 
         if (item != null) {
+
             if (item < (parseInt(original) * parseInt(input))) {
 
                 $(this).find("#u1734").css("opacity", "0.7");
@@ -102,18 +103,18 @@ function updateProcess() {
 }
 
 function process() {
- 
+
     if (processing || canProcess) {
 
         return;
     }
- 
+
     if (amount == null || amount == 'undefined') {
         amount = 1;
     }
 
     var time = Tables[table].Time * amount * 1000;
-
+      
     processing = true;
     $.post('https://core_drugs/process', JSON.stringify({
         type: table,
@@ -188,7 +189,7 @@ function harvestPlant() {
 
 function openProccesingTable() {
 
-    canProcess = true;
+    canProcess = false;
 
     var base = '<div id="gradient" style=" background: rgb(254,54,255); background: linear-gradient(90deg, rgba(' + Tables[table].Color + ',0.3) 0%, rgba(' + Tables[table].Color + ',0) 100%);"></div>' +
         '<div class="clearfix slide-right" id="processingTable"><!-- column -->' +
@@ -234,7 +235,7 @@ function openProccesingTable() {
                 '        </div>' +
                 '       </div>';
         } else {
-            canProcess = false;
+            canProcess = true;
 
             base = base + '       <div class="clearfix grpelem ingrediant" data-item="' + key2 + '"  id="u1737"><!-- group -->' +
                 '       <div class="shadow grpelem" id="u1734" style=" opacity: 0.7; background-color: rgba(31,31,31,0.5); background-image: url(' + urlitens + '' + key2 + '.png); background-size: 80%; background-repeat: no-repeat; background-position: center;"><!-- simple frame --></div>' +
@@ -269,7 +270,7 @@ function openProccesingTable() {
         '  </div>';
 
     $("#main_container").html(base);
-
+openProccesingTable();
 
 }
 
@@ -367,11 +368,38 @@ function updateInformation(info) {
 
     }
 
-
-    setProgress("#u882", info.growth, '#u836-4');
-    setProgress("#u885", info.rate, '#u866-4');
-    setProgress("#u888", info.water, '#u869-4');
-    setProgress("#u891", info.food, '#u872-4');
+var crescimento = 0
+var qualidade = 0
+var agua = 0
+var comida = 0 
+if (info.growth >= 100) {
+    crescimento = 100
+}
+else{
+    crescimento = info.growth
+}
+if (info.rate >= 100) {
+    qualidade = 100
+}
+else{
+    qualidade = info.rate
+}
+if (info.water >= 100) {
+    agua = 100
+}
+else{
+    agua = info.water
+}
+if (info.food >= 100) {
+    comida = 100
+}
+else{
+    comida = info.food
+}
+    setProgress("#u882", crescimento, '#u836-4');
+    setProgress("#u885", qualidade, '#u866-4');
+    setProgress("#u888", agua, '#u869-4');
+    setProgress("#u891", comida, '#u872-4');
 
 }
 

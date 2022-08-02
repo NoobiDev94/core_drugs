@@ -48,13 +48,47 @@ local foodRegen = false
 local cameraShake = false
 local strength = false
 local outOfBody = false
+local plants = {}
+local process = {}
+local info = false
+local nPlant = false
+local ped = 0
+local pedcoord = 0
+Citizen.CreateThread(function ()
+
+    while true do
+        pedcoord = GetEntityCoords(ped)
+        ped = PlayerPedId()
+        nPlant = nearPlant(ped)
+        info = coRE.getPlant(nPlant)
+
+        Citizen.Wait(500)
+
+    end
+
+
+end)
+
+Citizen.CreateThread(function ()
+
+    while true do
+      
+        plants = coRE.getinfoPlants()
+        process =  coRE.getinfoProcess()
+
+
+        Citizen.Wait(500)
+
+    end
+
+
+end)
 
 Citizen.CreateThread(function()
 
-
-    local plants = coRE.getinfoPlants()
-    local process =  coRE.getinfoProcess()
-
+        plants = coRE.getinfoPlants()
+        process =  coRE.getinfoProcess()
+   
                 Plants = plants
                 ProcessingTables = process
 
@@ -130,7 +164,8 @@ function spawnProcessingTable(type, coords, id, rot)
     SetEntityHeading(SpawnedTables[id], rot)
 end
 
-function process(type)
+function processar(type)
+   
     local ped = PlayerPedId()
     local coords = GetEntityCoords(ped)
     coords = GetOffsetFromEntityInWorldCoords(ped, 0.0, 1.5, -1.2)
@@ -149,7 +184,7 @@ Citizen.CreateThread(
     function()
         while true do
             if healthRegen then
-                local ped = PlayerPedId()
+          
                 local health = GetEntityHealth(ped)
                 SetEntityHealth(ped, health + 5)
                 Citizen.Wait(3000)
@@ -206,7 +241,7 @@ Citizen.CreateThread(
         while true do
             if strength then
                 local pid = PlayerId()
-                local ped = PlayerPedId()
+               
                 if GetSelectedPedWeapon(ped) == GetHashKey("WEAPON_UNARMED") then
                     SetPlayerMeleeWeaponDamageModifier(pid, 2.0)
                 end
@@ -478,9 +513,9 @@ function plant(plant)
     local ped = PlayerPedId()
     local coords = GetEntityCoords(ped)
 
-    if
-        GetGroundHash(ped) == -1286696947 or GetGroundHash(ped) == -1885547121 or GetGroundHash(ped) == 223086562 or
-            GetGroundHash(ped) == -461750719
+    if 1 == 1
+       -- GetGroundHash(ped) == -1286696947 or GetGroundHash(ped) == -1885547121 or GetGroundHash(ped) == 223086562 or
+           -- GetGroundHash(ped) == -461750719 
      then
        
         local canPlant = true
@@ -631,9 +666,42 @@ RegisterNUICallback(
         if action then
             return
         end
-
+        local myId = coRE.ReturnId()
+        if Plants[CurrentPlant].RobberyPermission then
+            if Plants[CurrentPlant].owner == myId then
         action = true
-        local ped = PlayerPedId()
+     
+        TaskStartScenarioInPlace(ped, "world_human_gardener_plant", 0, false)
+
+        SendNUIMessage(
+            {
+                type = "hidePlant"
+            }
+        )
+
+        Citizen.Wait(Config.Plants[Plants[CurrentPlant].type].Time)
+
+        if SpawnedPlants[CurrentPlant] ~= nil then
+            DeleteEntity(SpawnedPlants[CurrentPlant])
+        end
+
+        TriggerServerEvent("core_drugs:deletePlant", CurrentPlant)
+        TriggerServerEvent("core_drugs:harvest", Plants[CurrentPlant].type, CurrentPlantInfo)
+        Plants[CurrentPlant] = nil
+        SpawnedPlants[CurrentPlant] = nil
+        CurrentPlant = nil
+        CurrentPlantInfo = nil
+
+        ClearPedTasks(ped)
+        Citizen.Wait(4000)
+        action = false
+        ClearPedTasksImmediately(ped)
+    else
+          SendTextMessage(source,Config.Text["no_robbery"],"negado")
+    end
+    else
+        action = true
+     
         TaskStartScenarioInPlace(ped, "world_human_gardener_plant", 0, false)
 
         SendNUIMessage(
@@ -660,6 +728,7 @@ RegisterNUICallback(
         action = false
         ClearPedTasksImmediately(ped)
     end
+    end
 )
 
 RegisterNUICallback(
@@ -681,7 +750,7 @@ RegisterNUICallback(
 
         Citizen.CreateThread(
             function()
-                local ped = PlayerPedId()
+               
                 processing = true
                 TaskStartScenarioInPlace(ped, "PROP_HUMAN_BUM_BIN", 0, false)
                 Citizen.Wait(time)
@@ -720,7 +789,9 @@ RegisterNUICallback(
             return
         end
 
-        local ped = PlayerPedId()
+        local myId = coRE.ReturnId()
+        if Plants[CurrentPlant].RobberyPermission then
+            if Plants[CurrentPlant].owner == myId then
         action = true
         TaskStartScenarioInPlace(ped, "world_human_gardener_plant", 0, false)
 
@@ -747,6 +818,37 @@ RegisterNUICallback(
         Citizen.Wait(4000)
         action = false
         ClearPedTasksImmediately(ped)
+            else
+          SendTextMessage(source,Config.Text["no_robbery"],"negado")
+    end
+    else
+              action = true
+        TaskStartScenarioInPlace(ped, "world_human_gardener_plant", 0, false)
+
+        SendNUIMessage(
+            {
+                type = "hidePlant"
+            }
+        )
+
+        Citizen.Wait(2000)
+
+        if SpawnedPlants[CurrentPlant] ~= nil then
+            DeleteEntity(SpawnedPlants[CurrentPlant])
+        end
+        Plants[CurrentPlant] = nil
+        SpawnedPlants[CurrentPlant] = nil
+        DeleteEntity(SpawnedPlants[CurrentPlant])
+        TriggerServerEvent("core_drugs:deletePlant", CurrentPlant)
+        CurrentPlant = nil
+        CurrentPlantInfo = nil
+        vRPclient.DeletarObjeto(source)
+
+        ClearPedTasks(ped)
+        Citizen.Wait(4000)
+        action = false
+        ClearPedTasksImmediately(ped)
+    end
     end
 )
 
@@ -782,7 +884,7 @@ end
 end)
 function nearProccesing(ped)
     for k, v in pairs(ProcessingTables) do
-        if #(v.coords - GetEntityCoords(ped)) < 2.0 then
+        if #(v.coords - pedcoord) < 2.0 then
             return k
         end
     end
@@ -808,7 +910,13 @@ AddEventHandler(
     "core_drugs:growPlant",
     function(id, percent)
         if Plants[id] ~= nil and SpawnedPlants[id] ~= nil then
+
+            if parseInt(percent) >= 100 then 
+
+            setPlant(id, 100)
+        else
             setPlant(id, percent)
+        end
         end
     end)
 
@@ -820,6 +928,10 @@ AddEventHandler(
             CurrentPlantInfo.water = CurrentPlantInfo.water - (0.02 * CurrentPlantInfo.rate)
             CurrentPlantInfo.food = CurrentPlantInfo.food - (0.02 * CurrentPlantInfo.rate)
             CurrentPlantInfo.growth = CurrentPlantInfo.growth + (0.01 * CurrentPlantInfo.rate)
+     
+if CurrentPlantInfo.growth >= 100 then
+CurrentPlantInfo.growth = 100
+end
 
             SendNUIMessage(
                 {
@@ -834,9 +946,9 @@ AddEventHandler(
 RegisterNetEvent("core_drugs:addProcess")
 AddEventHandler(
     "core_drugs:addProcess",
-    function(type, coords, id, rot)
-        local ped = PlayerPedId()
-        ProcessingTables[id] = {type = type, coords = coords, usable = true}
+    function(type, coords, id, rot, owner)
+   
+        ProcessingTables[id] = {type = type, coords = coords, usable = true, owner = owner}
        
 
         Citizen.Wait(2000)
@@ -852,7 +964,7 @@ AddEventHandler( "core_drugs:addPlant",function(type, coords, id)
 
         local plantType = Config.Plants[type].PlantType
 
-        local ped = PlayerPedId()
+  
         Plants[id] = {type = type, coords = coords}
         TaskStartScenarioInPlace(ped, "world_human_gardener_plant", 0, false)
 
@@ -877,6 +989,7 @@ AddEventHandler(
 
 RegisterNetEvent("core_drugs:plant")
 AddEventHandler( "core_drugs:plant", function(type)
+
         plant(type)
     end
 )
@@ -885,9 +998,9 @@ RegisterNetEvent("core_drugs:process")
 AddEventHandler(
     "core_drugs:process",
     function(type)
-      
-   
-        process(type)
+      local name = type
+
+        processar(name)
     end
 )
 
@@ -927,7 +1040,7 @@ Citizen.CreateThread(
 
 Citizen.CreateThread(
     function()
-        local ped = PlayerPedId()
+      
 if Config.NPCDealer then
         for _, v in ipairs(Config.Dealers) do
             local Model = GetHashKey(v.Ped)
@@ -974,7 +1087,7 @@ end
 Citizen.CreateThread(function ()
 
     while true do
-        
+     
         if IsControlPressed(0, 19) then
 
             if not interactive then
@@ -982,35 +1095,33 @@ Citizen.CreateThread(function ()
                 SetNuiFocus(true, true)
             end
         else
-            Citizen.Wait(0)
+            Citizen.Wait(1)
             if interactive then
                 SetNuiFocus(false, false)
                 interactive = false
             end
         end
-        Citizen.Wait(0)
+        Citizen.Wait(1)
 
     end
 
 
 end)
+
+
+
 Citizen.CreateThread(
     function()
         Citizen.Wait(5000)
 
-        local ped = PlayerPedId()
-
+       
         while true do
-            local nPlant = nearPlant(ped)
-    
 
             if nPlant ~= false then
-
-
                 if not shown then
 
                     shown = true
-                    local info = coRE.getPlant(nPlant)
+                  
                  SetTimeout(Config.TimeDelayNui, function()
                     SendNUIMessage(
                         {
@@ -1026,9 +1137,7 @@ Citizen.CreateThread(
                 end
                 if shown then
                         CurrentPlant = nPlant
-                        Citizen.Wait(500)
-                        local info = coRE.getPlant(nPlant)
-                       
+                      
 
                         CurrentPlantInfo = info
 
@@ -1038,7 +1147,7 @@ Citizen.CreateThread(
                                 info = info
                             }
                         )
-
+ Citizen.Wait(500)
                         end
                         
                     
@@ -1047,7 +1156,7 @@ Citizen.CreateThread(
                 if shown then
                     CurrentPlant = nil
                     CurrentPlantInfo = nil
-
+                     Citizen.Wait(500)
                     SendNUIMessage(
                         {
                             type = "hidePlant"
@@ -1062,13 +1171,27 @@ Citizen.CreateThread(
             else
                 Citizen.Wait(0)
             end
+                                if IsControlPressed(0, 19) then
+
+            if not interactive then
+                interactive = true
+                SetNuiFocus(true, true)
+            end
+        else
+
+            if interactive then
+                SetNuiFocus(false, false)
+                interactive = false
+            end
+        end
+         
         end
     
     end)
 
     Citizen.CreateThread(function ()
         Citizen.Wait(5000)
-        local ped = PlayerPedId()
+ 
         while true do
             local nProcess = nearProccesing(ped)
      
@@ -1079,8 +1202,42 @@ Citizen.CreateThread(
             
             
                     DrawText3D(tableCoords[1], tableCoords[2], tableCoords[3] + 1.0, Config.Text["processing_table_holo"])
+                      local tableType2 = Config.ProcessingTables[ProcessingTables[nProcess].type]
+                      local myID = coRE.ReturnId()
+                   
                 if IsControlJustReleased(0, 51) and ProcessingTables[nProcess].usable then
+
+                    if tableType2.RobberyPermission then
+                       
+                        if ProcessingTables[nProcess].owner == myID then
                     SetNuiFocus(true, true)
+                    local datainv = coRE.returnInventory()
+                    local inv = {}
+                    for _, v in pairs(datainv.inventory) do
+         
+                        inv[_] = v.amount
+                    end
+
+                    CurrentTable = nProcess
+
+                    TriggerServerEvent("core_drugs:tableStatus", nProcess, false)
+             
+                    SendNUIMessage(
+                        {
+                            type = "showProcessing",
+                            tables = Config.ProcessingTables,
+                            process = ProcessingTables[nProcess].type,
+                            inventory = inv
+                        }
+                    )
+                    Citizen.Wait(500)
+                else
+ SendTextMessage(source,Config.Text["no_robbery"],"negado")
+
+                end
+            else
+
+             SetNuiFocus(true, true)
                     local datainv = coRE.returnInventory()
                     local inv = {}
                     for _, v in ipairs(datainv.inventory) do
@@ -1098,10 +1255,9 @@ Citizen.CreateThread(
                             process = ProcessingTables[nProcess].type,
                             inventory = inv
                         }
-                    )
-               
+                    )       
           
-
+end
         end
 
             end

@@ -5,7 +5,8 @@ Config = {
     DefaultRate = 10, -- Plants planted outside zone default growth rate percentage
     WeightSystem = true, -- Ignorar
     NPCDealer = true, -- Se for utilizar o sistema de venda por NPC do proprio script, deixar true.
-    TimeDelayNui = 5000, --Ao plantar é importante definir quanto tempo a NUi demora pra aparecer. Nunca deixe 0.
+    TimeDelayNui = 3000, --Ao plantar é importante definir quanto tempo a NUi demora pra aparecer. Nunca deixe 0.
+    
     
     Zones = {
     
@@ -41,29 +42,32 @@ Config = {
             PlantType = 'plant2', -- Tipo do prop ao ser plantado (plant1, plant2, small_plant) voce pode ver as opções em main/client.lua line: 2
             Color = '255, 255, 255', -- Cor em RGB da font na NUI
             Produce = 'folhas-coca', -- Item que recebe ao colher
+            RobberyPermission = true,
             Permission = true, -- Se esse item precisa de permissão para plantar
             PermissionGroup = "manager.permissao", -- Permissão para plantar
             Amount = 3, -- O maximo que pode ser colhido
             SeedChance = 50, -- Porcentagem de ao colher ganhar uma semente
             Time = 30, -- Tempo até a colheita (Em milisegundos)
-            AmountSeed = 2 -- Quantidade de sementes consumidar ao plantar.
+            AmountSeed = 2, -- Quantidade de sementes consumidar ao plantar.
+            Ratebonus = 50 -- Aqui voce define a qualidade que a planta tem que ter para a colheita ter um bonus
         }
     
     },
     
     ProcessingTables = { -- Create processing table
         
-            ['semente-coca'] = {
+            ['molas'] = {
     
                 Label = 'Cocaina', --Nome do item que será processado
                 Model = 'bkr_prop_coke_table01a', -- Tipos de bancadas: bkr_prop_weed_table_01a, bkr_prop_meth_table01a, bkr_prop_coke_table01a
                 Color = '255, 255, 255', -- Cor da font em RGB que aparece na NUI
                 Item = 'cocaina', -- Ao produzir que item recebe
+                RobberyPermission = true,
                 Permission = true, -- Se precisa de permissão para produzir esse item
                 PermissionGroup = "manager.permissao", -- Permissão para produzir esse item
                 Time = 10, -- Tempo em segundos para fazer 1 item
                 Ingrediants = { -- itens para produzir
-                    ['pasta-base'] = 3,
+                    ['folhas-coca'] = 3,
                     ['dinheiro'] = 1
                 }
     
@@ -131,7 +135,9 @@ Config = {
         ['sold_dealer'] = 'You sold drugs to dealer! +$',
         ['no_drugs'] = 'You dont have enough drugs',
         ['success_process'] = 'Você produziu ',
-        ['no_permission'] = 'Você não possuem habilidades para fazer essa ação desejada.'
+        ['no_permission'] = 'Você não possuem habilidades para fazer essa ação desejada.',
+        ['no_robbery'] = 'Não mexa no que não é seu!',
+        ['no_table'] = 'Você não possue bancada!'
     }
     
     }

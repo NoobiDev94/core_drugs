@@ -4,11 +4,10 @@ RegisterServerEvent("core_drugs:Produzir")
 AddEventHandler(
     "core_drugs:Produzir",
     function(source, type)
-
-				proccesing(source, type)
-			
-			
-		
+print("mostra aqui", source, type)
+local name = type
+				proccesing(name)
+	
     end
 )
 

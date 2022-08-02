@@ -6,68 +6,92 @@ vRPclient = Tunnel.getInterface("vRP")
 coRE = {}
 Tunnel.bindInterface("core_drugs", coRE)
 local idgens = Tools.newIDGenerator()
-
+vRP._prepare("core_drugs/DeadPlants", "SELECT markid,id FROM plants WHERE (water < 2 OR food < 2) AND rate > 0")
+vRP._prepare("core_drugs/DeadPlantsGet", "SELECT markid, id FROM plants")
+vRP._prepare("core_drugs/GrowPlants",
+    "SELECT id,markid, growth FROM plants WHERE (growth >= 30 AND growth <= 79) OR (growth >= 80 AND growth <= 100)")
+vRP._prepare("core_drugs/GrowPlantsGet",
+    "SELECT id,markid, growth FROM plants")
+vRP._prepare("core_drugs/UpdatePlantsDead",
+    "UPDATE plants SET rate = @rate, food = @food, water = @water  WHERE markid = @id")
+vRP._prepare("core_drugs/UpdatePlantsReduction",
+    "UPDATE plants SET growth = growth + (0.01 * rate), food = food - (0.02 * rate), water = water - (0.02 * rate), rate = rate + 1 WHERE water >= 2 OR food >= 2")
 function coRE.ReturnPermissionPlayer(table)
-	local src = source
-	local user_id = vRP.getUserId(src)
+    local src = source
+    local user_id = vRP.getUserId(src)
      return  vRP.hasPermission(user_id,table)
 
 end
 function coRE.ReturnPermissionPlayer2(table)
-	local src = source
-	local user_id = vRP.getUserId(src)
+    local src = source
+    local user_id = vRP.getUserId(src)
      return  vRP.hasPermission(user_id,table)
 
 end
 
+function coRE.ReturnId()
+    local src = source
+    local user_id = vRP.getUserId(src)
+     return user_id
+
+end
 
 CreateThread(
     function()
-        updatePlants()
+        while true do
+        
+            updatePlants()
+
+           Citizen.Wait(Config.GlobalGrowthRate * 1000)
+       end
     end
 )
-vRP._prepare("core_drugs/DeadPlants", "SELECT id FROM plants WHERE (water < 2 OR food < 2) AND rate > 0")
-vRP._prepare("core_drugs/GrowPlants",
-    "SELECT id, growth FROM plants WHERE(growth >= 30 AND growth <= 31) OR (growth >= 80 AND growth <= 81)")
-vRP._prepare("core_drugs/UpdatePlantsDead",
-    "UPDATE plants SET rate = @rate, food = @food, water = @water  WHERE markid = @id")
-vRP._prepare("core_drugs/UpdatePlantsReduction",
-    "UPDATE plants SET growth = growth + (0.01 * rate), food = food - (0.02 * rate), water = water - (0.02 * rate) WHERE water >= 2 OR food >= 2")
+
 function updatePlants()
-    Citizen.SetTimeout(
-        Config.GlobalGrowthRate * 1000,
-        function()
-            updatePlants()
-        end
-    )
 
     --DEAD PLANTS
 
 
     local info = vRP.query("core_drugs/DeadPlants")
+    local info4 = vRP.query("core_drugs/DeadPlantsGet")
     if #info > 0 then
     for _, v in ipairs(info) do
-        vRP.execute("core_drugs/UpdatePlantsDead", { id = v.id, rate = 0, food = 0, water = 0 })
+            if #info > 0 then
+        vRP.execute("core_drugs/UpdatePlantsDead", { id = v.markid, rate = 0, food = 0, water = 0 })
+            end
 
     end
 end
 
 
-
-
-    -- ALIVE PLANT REDUCTION
+        -- ALIVE PLANT REDUCTION
     vRP.execute("core_drugs/UpdatePlantsReduction")
     TriggerClientEvent("core_drugs:growthUpdate", -1)
+
+
 
 
     -- GROW PLANTS
 
 
     local info2 = vRP.query("core_drugs/GrowPlants")
-if #info2 > 0 then
+     local info3 = vRP.query("core_drugs/GrowPlantsGet")
+
+if #info3 > 0 then
     for _, v in ipairs(info2) do
-        TriggerClientEvent("core_drugs:growPlant", -1, v.id, v.growth)
+  if parseInt(v.growth) >= 100 then
+           
+              TriggerClientEvent("core_drugs:growPlant", -1, v.markid, 100)
+          else
+            if (v.growth >= 30 or v.growth <=31) and (v.growth >= 80 or v.growth <= 81) then
+ 
+              TriggerClientEvent("core_drugs:growPlant", -1, v.markid, v.growth)
+
+          end
+       end
+      
     end
+
 end
 
 
@@ -84,6 +108,8 @@ function proccesing(source,type)
     local source = source
     local user_id = vRP.getUserId(source)
     local tablex = Config.ProcessingTables[type]
+
+  
     if tablex.Permission then
 
         if vRP.hasPermission(user_id,tablex.PermissionGroup) then
@@ -91,33 +117,43 @@ function proccesing(source,type)
     TriggerClientEvent("core_drugs:process",source,type)
         else
             TriggerClientEvent("core_drugs:sendMessage", source, Config.Text["no_permission"], "negado")
-    end
+        end
+        else
+            TriggerClientEvent("core_drugs:process",source,type)
+
+   
     end
 end
 
 function plant(player, type)
+
     TriggerClientEvent("core_drugs:plant", player, type)
 end
 
 function drug(player, type)
     TriggerClientEvent("core_drugs:drug", player, type)
 end
-vRP._prepare("core-drugs/addProcessing","INSERT INTO processing (type, item, time, coords, rot, markid) VALUES (@type, @item, @time, @coords, @rot, @markid)")
+vRP._prepare("core-drugs/addProcessing","INSERT INTO processing (type, item, time, coords, rot, markid, owner) VALUES (@type, @item, @time, @coords, @rot, @markid, @owner)")
 function addProcess(type, coords, rot)
-            local idgen =  idgens:gen()
+            local idgen =  parseInt(math.random(100) + os.clock())
 
             local source = source
             local user_id = vRP.getUserId(source)
+if  vRP.tryGetInventoryItem(user_id,type,parseInt(1)) then
+            vRP.execute("core-drugs/addProcessing",{ coords = json.encode({ x = coords[1], y = coords[2], z = coords[3] }), type = type, item = "{}", time = os.time(), rot = rot, markid = idgen, owner = user_id})
+            TriggerClientEvent("core_drugs:addProcess", -1, type, coords, idgen, rot,user_id)
 
-            vRP.execute("core-drugs/addProcessing",{ coords = json.encode({ x = coords[1], y = coords[2], z = coords[3] }), type = type, item = "{}", time = 0, rot = rot, markid = idgen})
-            TriggerClientEvent("core_drugs:addProcess", -1, type, coords, idgen, rot)
+        else
+
+ TriggerClientEvent("core_drugs:sendMessage",source, Config.Text["no_table"], "negado")
+end
             
                    
               
          
 end
 
-vRP._prepare("core-drugs/addPlant","INSERT IGNORE INTO plants (coords, type, growth, rate,water,food, markid) VALUES(@coords, @type, @growth, @rate, @water, @food, @markid)")
+vRP._prepare("core-drugs/addPlant","INSERT IGNORE INTO plants (coords, type, growth, rate,water,food, markid, owner) VALUES(@coords, @type, @growth, @rate, @water, @food, @markid, @owner)")
 
 function addPlant(type, coords, id)
     local rate = Config.DefaultRate
@@ -146,7 +182,9 @@ function addPlant(type, coords, id)
             return
         end
     end
-    vRP.execute("core-drugs/addPlant",{ coords = json.encode({ x = coords[1], y = coords[2], z = coords[3] }), type = type, growth = 0, rate = rate, water = 10, food = 10, markid = id })
+    local source = source
+    local user_id = vRP.getUserId(source)
+    vRP.execute("core-drugs/addPlant",{ coords = json.encode({ x = coords[1], y = coords[2], z = coords[3] }), type = type, growth = 0, rate = rate, water = 10, food = 10, markid = id, owner = user_id })
     TriggerClientEvent("core_drugs:addPlant", -1, type, coords, id)
 
 end
@@ -166,8 +204,8 @@ AddEventHandler(
         local typeInfo = Config.Plants[type]
         if vRP.tryGetInventoryItem(Player, type, parseInt(typeInfo.AmountSeed)) then
             PlantProgress(source, type)
-            local genID = idgens:gen()
-
+            local genID = parseInt(math.random(100) + os.clock())
+  
             addPlant(type, coords, genID)
         end
 
@@ -186,7 +224,7 @@ AddEventHandler(
 
             if vRP.hasPermission(user_id,table.PermissionGroup) then
                 for k, v in pairs(table.Ingrediants) do
-               
+               print("primeira etapa", vRP.getInventoryItemAmount(user_id, k), "<", k,v)
                     if vRP.getInventoryItemAmount(user_id, k) < v then
                         TriggerClientEvent("core_drugs:sendMessage", source, Config.Text["missing_ingrediants"], "negado")
                         return
@@ -205,7 +243,7 @@ AddEventHandler(
             end
         else
             for k, v in pairs(table.Ingrediants) do
-               
+                 print("primeira etapa2", vRP.getInventoryItemAmount(user_id, k), "<", v)
                 if vRP.getInventoryItemAmount(user_id, k) < v then
                     TriggerClientEvent("core_drugs:sendMessage", source, Config.Text["missing_ingrediants"], "negado")
                     return
@@ -291,7 +329,7 @@ AddEventHandler(
 
     end
 )
-vRP._prepare("core_drugs/deleteTable", "DELETE FROM processing WHERE id = @id")
+vRP._prepare("core_drugs/deleteTable", "DELETE FROM processing WHERE markid = @id")
 RegisterServerEvent("core_drugs:deleteTable")
 AddEventHandler(
     "core_drugs:deleteTable",
@@ -299,7 +337,7 @@ AddEventHandler(
         local Player = vRP.getUserId(source)
 
         vRP.execute("core_drugs/deleteTable", { id = id })
-        --Player.addInventoryItem(type, 1)
+         vRP.giveInventoryItem(Player, type, parseInt(1))
     end
 )
 vRP._prepare("core_drugs/updatePlant", "UPDATE plants SET growth= @growth, rate = @rate, food = @food, water = @water  WHERE markid = @markid")
@@ -307,7 +345,15 @@ RegisterServerEvent("core_drugs:updatePlant")
 AddEventHandler(
     "core_drugs:updatePlant",
     function(id, info)
-
+if parseInt(info.growth) >= 100 then
+   info.growth = 100
+elseif parseInt(info.rate) >= 100 then
+    info.rate = 100
+elseif parseInt(info.food) >= 100 then
+    info.food = 100
+ elseif  parseInt(info.water) >= 100 then
+    info.water = 100
+end
         vRP.query("core_drugs/updatePlant",
             { markid = id, growth = info.growth, rate = info.rate, food = info.food, water = info.water })
 
@@ -326,6 +372,10 @@ AddEventHandler("core_drugs:harvest", function(type, info)
     if info.growth < 20 then
         val = 0
     end
+if info.rate >= typeInfo.Ratebonus then
+vRP.giveInventoryItem(Player, type, parseInt(1))
+vRP.giveInventoryItem(Player, typeInfo.Produce, parseInt(math.random(1,3)))
+end
 
     if (typeInfo.SeedChance >= math.random(1, 100)) then
         vRP.giveInventoryItem(Player, type, parseInt(1))
@@ -347,10 +397,10 @@ function coRE.getinfoPlants()
     for _, v in ipairs(plantas) do
         local coords = json.decode(v.coords) or { x = 0, y = 0, z = 0 }
 
-        local data = { growth = v.growth, rate = v.rate, water = v.water, food = v.food }
+        local data = { growth = v.growth, rate = v.rate, water = v.water, food = v.food, owner = v.owner }
         coords = vector3(coords.x, coords.y, coords.z)
 
-        plants[v.markid] = { type = v.type, coords = coords, info = data }
+        plants[v.markid] = { type = v.type, coords = coords, info = data, owner = v.owner }
     end
 
 
@@ -367,10 +417,10 @@ function coRE.getPlants(nplant)
     for _, v in ipairs(plantas) do
         local coords = json.decode(v.coords) or { x = 0, y = 0, z = 0 }
 
-        local data = { growth = v.growth, rate = v.rate, water = v.water, food = v.food }
+        local data = { growth = v.growth, rate = v.rate, water = v.water, food = v.food, owner = v.owner}
         coords = vector3(coords.x, coords.y, coords.z)
 
-        plants[v.markid] = { type = v.type, coords = coords, info = data }
+        plants[v.markid] = { type = v.type, coords = coords, info = data, owner = v.owner }
     end
 
 
@@ -390,12 +440,14 @@ function coRE.getinfoProcess()
         local data = json.decode(g.item) or {}
         coords = vector3(coords.x, coords.y, coords.z)
 
-        process[g.id] = {
+        process[g.markid] = {
+            markid = g.markid,
             type = g.type,
             coords = coords,
             item = data,
             time = g.time,
             rot = g.rot,
+            owner = g.owner,
             usable = true
         }
     end
@@ -409,7 +461,7 @@ end
 vRP._prepare("core-drugs/plants", "SELECT * FROM plants WHERE id = @id LIMIT 1")
 vRP._prepare("core-drugs/Checkplants", "SELECT * FROM plants")
 local datadb = {}
-local refreshdb = 5000
+local refreshdb = 500
 Citizen.CreateThread(function()
 
     while true do
@@ -428,9 +480,10 @@ Citizen.CreateThread(function()
             for k, v in pairs(Checkplants) do
 
                 table.insert(datadb,
-                    { id = v.id, markid = v.markid, growth = v.growth, rate = v.rate, water = v.water, food = v.food })
+                    { id = v.id, markid = v.markid, growth = v.growth, rate = v.rate, water = v.water, food = v.food, owner = v.owner })
 
                     refreshdb = 10
+           
                 if #Checkplants == #datadb then
                     goto breaklooping
                 end
@@ -465,3 +518,24 @@ function coRE.getPlant(nPlant)
 
 
 end
+
+Citizen.CreateThread( function()
+    updatePath = "/NoobiDev94/core_drugs" 
+    resourceName = "("..GetCurrentResourceName()..")" 
+    
+    function checkVersion(err,responseText, headers)
+        curVersion = LoadResourceFile(GetCurrentResourceName(), "version") 
+    
+        if curVersion ~= responseText and tonumber(curVersion) < tonumber(responseText) then
+            print("\n###############################")
+            print("\n"..resourceName.." está desatualizado, versão atualizada:\n"..responseText.."sua versão:\n"..curVersion.."\npor favor atualize-o através do https://github.com"..updatePath.."")
+            print("\n###############################")
+        elseif tonumber(curVersion) > tonumber(responseText) then
+            print("Você de alguma forma pulou algumas versões do script "..resourceName.." ou o github ficou offline, se ainda estiver online eu aconselho você atualizar (ou fazer downgrade?)")
+        else
+            print(resourceName.." versão: "..curVersion)
+        end
+    end
+    
+    PerformHttpRequest("raw.githubusercontent.com"..updatePath.."/main/version", checkVersion, "GET")
+    end)
