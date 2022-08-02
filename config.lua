@@ -6,6 +6,7 @@ Config = {
     WeightSystem = true, -- Ignorar
     NPCDealer = true, -- Se for utilizar o sistema de venda por NPC do proprio script, deixar true.
     TimeDelayNui = 3000, --Ao plantar é importante definir quanto tempo a NUi demora pra aparecer. Nunca deixe 0.
+    CheckDbIfExist = true, -- Após primeiro starte pode desabilitar, ou deixei para sempre verificar estado do banco de dados.
     
     
     Zones = {

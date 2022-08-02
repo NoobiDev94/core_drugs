@@ -6,6 +6,16 @@ vRPclient = Tunnel.getInterface("vRP")
 coRE = {}
 Tunnel.bindInterface("core_drugs", coRE)
 local idgens = Tools.newIDGenerator()
+if Config.CheckDbIfExist then
+CreateThread(function()
+    vRP.execute('core_drugs/create_plants')
+    vRP.execute('core_drugs/create_tabletprocess')
+ print("Checando banco de dados, aguarde.")
+ Citizen.Wait(10000)
+ print("Inicialização do banco de dados finalizada.")
+end)
+
+end
 vRP._prepare("core_drugs/DeadPlants", "SELECT markid,id FROM plants WHERE (water < 2 OR food < 2) AND rate > 0")
 vRP._prepare("core_drugs/DeadPlantsGet", "SELECT markid, id FROM plants")
 vRP._prepare("core_drugs/GrowPlants",
@@ -533,7 +543,7 @@ Citizen.CreateThread( function()
         elseif tonumber(curVersion) > tonumber(responseText) then
             print("Você de alguma forma pulou algumas versões do script "..resourceName.." ou o github ficou offline, se ainda estiver online eu aconselho você atualizar (ou fazer downgrade?)")
         else
-            print(resourceName.." versão: "..curVersion)
+            print(resourceName.." iniciado com sucesso. Versão: "..string.gsub(curVersion, "%s+", ""))
         end
     end
     

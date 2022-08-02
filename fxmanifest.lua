@@ -24,6 +24,7 @@ server_scripts{
     "@vrp/lib/utils.lua",
     'config.lua',
     'server/main.lua',
+    'server/db.lua',
     'TriggerItems.lua'
 
 }
